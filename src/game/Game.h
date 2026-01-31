@@ -24,5 +24,7 @@ private:
 
     SDL_Texture* playerIdle;
 
+    int windowWidth;
+    int windowHeight;
     bool mRunning;
 };

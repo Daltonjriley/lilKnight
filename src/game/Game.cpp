@@ -16,10 +16,10 @@ bool Game::initialize() {
         return false;
     }
 
-    int windowWidth = 800;
-    int windowHeight = 600;
+    windowWidth = 800;
+    windowHeight = 600;
 
-    mWindow = SDL_CreateWindow("Lil Knight", windowWidth, windowHeight, 0);
+    mWindow = SDL_CreateWindow("Lil Knight", windowWidth, windowHeight, SDL_WINDOW_RESIZABLE);
     if (!mWindow) 
     {
         SDL_Log("Could not create window: %s", SDL_GetError());
@@ -32,6 +32,10 @@ bool Game::initialize() {
         SDL_Log("Could not create renderer: %s", SDL_GetError());
         return false;
     }
+
+    int logicalWidth = 640;
+    int logicalHeight = 320;
+    SDL_SetRenderLogicalPresentation(mRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     loadData();
 
@@ -55,9 +59,17 @@ void Game::processInput()
     {
         switch (event.type)
         {
-        case SDL_EVENT_QUIT:
-            mRunning = false;
-            break;
+            case SDL_EVENT_QUIT:
+            {
+                mRunning = false;
+                break;
+            }
+            case SDL_EVENT_WINDOW_RESIZED:
+            {
+                windowWidth = event.window.data1;
+                windowHeight = event.window.data2;
+                break;
+            }
         }    
     }
 }
@@ -81,8 +93,8 @@ void Game::render()
     SDL_FRect dst {
         .x = 0.0f,
         .y = 0.0f,
-        .w = 128.0f,
-        .h = 128.0f
+        .w = 64.0f,
+        .h = 64.0f
     };
 
     SDL_RenderTexture(mRenderer, playerIdle, &src, &dst);
