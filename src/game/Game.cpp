@@ -71,7 +71,21 @@ void Game::render()
     SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
     SDL_RenderClear(mRenderer);
 
-    SDL_RenderTexture(mRenderer, playerIdle, nullptr, nullptr);
+    SDL_FRect src {
+        .x = 0.0f,
+        .y = 0.0f,
+        .w = 192.0f,
+        .h = 192.0f
+    };
+
+    SDL_FRect dst {
+        .x = 0.0f,
+        .y = 0.0f,
+        .w = 128.0f,
+        .h = 128.0f
+    };
+
+    SDL_RenderTexture(mRenderer, playerIdle, &src, &dst);
 
     SDL_RenderPresent(mRenderer);
 }
@@ -79,6 +93,7 @@ void Game::render()
 void Game::loadData()
 {
     playerIdle = IMG_LoadTexture(mRenderer, "assets/player/player_sheet.png");
+    SDL_SetTextureScaleMode(playerIdle, SDL_SCALEMODE_NEAREST);
 }
 
 void Game::unloadData()
