@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 
 class Game 
 {
@@ -15,9 +16,13 @@ private:
     void processInput();
     void update();
     void render();
+    void loadData();
+    void unloadData();
     
     SDL_Window* mWindow;
     SDL_Renderer* mRenderer;
+
+    SDL_Texture* playerIdle;
 
     bool mRunning;
 };

@@ -33,6 +33,8 @@ bool Game::initialize() {
         return false;
     }
 
+    loadData();
+
     return true;
 }
 
@@ -69,13 +71,24 @@ void Game::render()
     SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
     SDL_RenderClear(mRenderer);
 
-    
+    SDL_RenderTexture(mRenderer, playerIdle, nullptr, nullptr);
 
     SDL_RenderPresent(mRenderer);
 }
 
+void Game::loadData()
+{
+    playerIdle = IMG_LoadTexture(mRenderer, "assets/player/player_sheet.png");
+}
+
+void Game::unloadData()
+{
+    SDL_DestroyTexture(playerIdle);
+}
+
 void Game::shutdown()
 {
+    unloadData();
     SDL_DestroyRenderer(mRenderer);
     SDL_DestroyWindow(mWindow);
     SDL_Quit();
