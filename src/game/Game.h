@@ -17,6 +17,7 @@ private:
     void render();
     
     SDL_Window* mWindow;
+    SDL_Renderer* mRenderer;
 
     bool mRunning;
 };
