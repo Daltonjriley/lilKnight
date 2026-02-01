@@ -117,8 +117,8 @@ void Game::render()
     SDL_FRect src {
         .x = 0.0f,
         .y = 0.0f,
-        .w = SPRITE_SIZE_ACTUAL,
-        .h = SPRITE_SIZE_ACTUAL
+        .w = SPRITE_SIZE_ACTUAL_W,
+        .h = SPRITE_SIZE_ACTUAL_H
     };
 
     SDL_FRect dst {
@@ -136,7 +136,7 @@ void Game::render()
 
 void Game::loadData()
 {
-    playerIdle = IMG_LoadTexture(mRenderer, "assets/player/player_sheet.png");
+    playerIdle = IMG_LoadTexture(mRenderer, "assets/player/IDLE.png");
     SDL_SetTextureScaleMode(playerIdle, SDL_SCALEMODE_NEAREST);
 }
 

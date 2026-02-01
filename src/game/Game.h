@@ -3,6 +3,8 @@
 #include "utility/animation.h"
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
+#include <vector>
+#include <string>
 
 class Game 
 {
@@ -39,5 +41,7 @@ private:
     float movedir {0.0f};
     bool flipPlayer {false};
     const float SPRITE_SIZE {64.0f};
-    const float SPRITE_SIZE_ACTUAL {192.0f};
+    const float SPRITE_SIZE_ACTUAL_W {96.0f};
+    const float SPRITE_SIZE_ACTUAL_H {84.0f};
+
 };
