@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utility/animation.h"
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <vector>
@@ -13,9 +12,11 @@ public:
     bool initialize();
     void runLoop();
     void shutdown();
+
+    void addActor(class Actor* actor);
+    void removeActor(class Actor* actor);
     
 private:
-
     void processInput();
     void update();
     void render();
@@ -28,6 +29,9 @@ private:
     SDL_Texture* playerIdle;
 
     uint32_t mTicksCount;
+    bool mUpdatingActors;
+    std::vector<class Actor*> mActors;
+    std::vector<class Actor*> mPendingActors;
 
     int windowWidth {1600};
     int windowHeight {900};

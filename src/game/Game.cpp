@@ -1,11 +1,14 @@
 #include "Game.h"
+#include "Actor/Actor.h"
 
 #include <iostream>
+#include <algorithm>
 
 Game::Game()
     : mWindow(nullptr)
     , mRenderer(nullptr)
     , mRunning(true)
+    , mUpdatingActors(false)
 {
 }
 
@@ -151,4 +154,35 @@ void Game::shutdown()
     SDL_DestroyRenderer(mRenderer);
     SDL_DestroyWindow(mWindow);
     SDL_Quit();
+}
+
+void Game::addActor(Actor* actor)
+{
+    if (mUpdatingActors)
+	{
+		mPendingActors.emplace_back(actor);
+	}
+	else
+	{
+		mActors.emplace_back(actor);
+	}
+}
+
+void Game::removeActor(Actor* actor)
+{
+    auto iter = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
+	if (iter != mPendingActors.end())
+	{
+		std::iter_swap(iter, mPendingActors.end() - 1);
+		mPendingActors.pop_back();
+	}
+
+	// Is it in actors?
+	iter = std::find(mActors.begin(), mActors.end(), actor);
+	if (iter != mActors.end())
+	{
+		// Swap to end of vector and pop off (avoid erase copies)
+		std::iter_swap(iter, mActors.end() - 1);
+		mActors.pop_back();
+	}
 }
