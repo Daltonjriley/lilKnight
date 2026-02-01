@@ -1,4 +1,5 @@
 #include "Game.h"
+
 #include <iostream>
 
 Game::Game()
@@ -73,14 +74,23 @@ void Game::processInput()
     const bool *keyboard = SDL_GetKeyboardState(nullptr);
     if (keyboard[SDL_SCANCODE_A])
     {
-        moveSpeed += -10.0f;
+        movedir = -1.0f;
         flipPlayer = true;
     }
     if (keyboard[SDL_SCANCODE_D])
     {
-        moveSpeed += 10.0f;
+        movedir = 1.0f;
         flipPlayer = false;
     }
+    if (!keyboard[SDL_SCANCODE_A] && !keyboard[SDL_SCANCODE_D])
+    {
+        movedir = 0.0f;
+    }
+    if (keyboard[SDL_SCANCODE_A] && keyboard[SDL_SCANCODE_D])
+    {
+        movedir = 0.0f;
+    }
+    
     
 
 }
@@ -96,7 +106,7 @@ void Game::update()
 	}
 	mTicksCount = SDL_GetTicks();
 
-    playerX += moveSpeed * deltaTime;
+    playerX += movedir * 100.0f * deltaTime;
 }
 
 void Game::render()

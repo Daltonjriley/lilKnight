@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utility/animation.h"
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 
@@ -35,7 +36,7 @@ private:
 
     float playerX {0.0f};
     float playerY {0.0f};
-    float moveSpeed {0.0f};
+    float movedir {0.0f};
     bool flipPlayer {false};
     const float SPRITE_SIZE {64.0f};
     const float SPRITE_SIZE_ACTUAL {192.0f};
