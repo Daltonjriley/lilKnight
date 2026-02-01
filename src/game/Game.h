@@ -24,7 +24,19 @@ private:
 
     SDL_Texture* playerIdle;
 
-    int windowWidth;
-    int windowHeight;
+    uint32_t mTicksCount;
+
+    int windowWidth {1600};
+    int windowHeight {900};
+    int logicalWidth {640};
+    int logicalHeight {320};
+    const float FLOOR {static_cast<float>(logicalHeight)};
     bool mRunning;
+
+    float playerX {0.0f};
+    float playerY {0.0f};
+    float moveSpeed {0.0f};
+    bool flipPlayer {false};
+    const float SPRITE_SIZE {64.0f};
+    const float SPRITE_SIZE_ACTUAL {192.0f};
 };

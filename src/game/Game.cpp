@@ -16,9 +16,6 @@ bool Game::initialize() {
         return false;
     }
 
-    windowWidth = 800;
-    windowHeight = 600;
-
     mWindow = SDL_CreateWindow("Lil Knight", windowWidth, windowHeight, SDL_WINDOW_RESIZABLE);
     if (!mWindow) 
     {
@@ -33,11 +30,11 @@ bool Game::initialize() {
         return false;
     }
 
-    int logicalWidth = 640;
-    int logicalHeight = 320;
     SDL_SetRenderLogicalPresentation(mRenderer, logicalWidth, logicalHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
     loadData();
+
+    mTicksCount = SDL_GetTicks();
 
     return true;
 }
@@ -72,10 +69,34 @@ void Game::processInput()
             }
         }    
     }
+
+    const bool *keyboard = SDL_GetKeyboardState(nullptr);
+    if (keyboard[SDL_SCANCODE_A])
+    {
+        moveSpeed += -10.0f;
+        flipPlayer = true;
+    }
+    if (keyboard[SDL_SCANCODE_D])
+    {
+        moveSpeed += 10.0f;
+        flipPlayer = false;
+    }
+    
+
 }
 
 void Game::update()
 {
+    #define SDL_TICKS_PASSED(A, B)  ((Sint32)((B) - (A)) <= 0)
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
+    float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
+	if (deltaTime > 0.05f)
+	{
+		deltaTime = 0.05f;
+	}
+	mTicksCount = SDL_GetTicks();
+
+    playerX += moveSpeed * deltaTime;
 }
 
 void Game::render()
@@ -86,18 +107,19 @@ void Game::render()
     SDL_FRect src {
         .x = 0.0f,
         .y = 0.0f,
-        .w = 192.0f,
-        .h = 192.0f
+        .w = SPRITE_SIZE_ACTUAL,
+        .h = SPRITE_SIZE_ACTUAL
     };
 
     SDL_FRect dst {
-        .x = 0.0f,
-        .y = 0.0f,
-        .w = 64.0f,
-        .h = 64.0f
+        .x = playerX,
+        .y = FLOOR - SPRITE_SIZE,
+        .w = SPRITE_SIZE,
+        .h = SPRITE_SIZE
     };
 
-    SDL_RenderTexture(mRenderer, playerIdle, &src, &dst);
+    SDL_RenderTextureRotated(mRenderer, playerIdle, &src, &dst, 0.0f, nullptr, 
+        flipPlayer ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
 
     SDL_RenderPresent(mRenderer);
 }
