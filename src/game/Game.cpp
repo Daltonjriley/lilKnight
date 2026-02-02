@@ -172,7 +172,9 @@ SDL_Texture* Game::getTexture(const std::string& fileName)
 
 void Game::loadData()
 {
-    
+    mPlayer = new Player(this);
+    mPlayer->setPosition(glm::vec2{logicalWidth / 2.0f, FLOOR - SPRITE_SIZE / 2.0f});
+    mPlayer->setScale(1.0f);
 }
 
 void Game::unloadData()

@@ -24,6 +24,7 @@ public:
 	
 	SDL_Texture* getTexture(const std::string& fileName);
     
+    
 private:
     void processInput();
     void update();

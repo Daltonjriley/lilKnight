@@ -24,8 +24,8 @@ void SpriteComponent::draw(SDL_Renderer* renderer)
         SDL_SetTextureScaleMode(mTexture, SDL_SCALEMODE_NEAREST);
 
         SDL_FRect dst {
-        .x = mOwner->getPosition().x - dst.w / 2,
-        .y = mOwner->getPosition().y - dst.h / 2,
+        .x = mOwner->getPosition().x,
+        .y = mOwner->getPosition().y,
         .w = (mTexWidth * mOwner->getScale()),
         .h = (mTexHeight * mOwner->getScale())
         };

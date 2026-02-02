@@ -8,7 +8,8 @@ Player::Player(Game* game)
 {
     SpriteComponent* sc = new SpriteComponent(this, 150);
     sc->setTexture(game->getTexture("assets/player/IDLE.png"));
-    
+    sc->setTexWidth(96);
+    sc->setTexHeight(84);
 }
 
 void Player::updateActor(float deltaTime)
