@@ -20,8 +20,13 @@ public:
     void updateComponents(float deltaTime);
     virtual void updateActor(float deltaTime);
 
-    void processInput(const uint8_t* keyState);
-    virtual void actorInput(const uint8_t* keyState);
+    void processInput(const bool* keyState);
+    virtual void actorInput(const bool* keyState);
+
+    glm::vec2 getForward() const 
+    {
+        return glm::vec2{cosf(mRotation), sinf(mRotation)};
+    }
 
     void addComponent(class Component* component);
     void removeComponent(class Component* component);
@@ -34,6 +39,8 @@ public:
     void setRotation(float rotation) { mRotation = rotation; }
     State getState() const { return mState; }
     void setState(State state) { mState = state; }
+    bool getFlip() const { return mFlip; }
+    void setFlip(bool flip) { mFlip = flip; }
     class Game* getGame() { return mGame; }
     
 private:
@@ -44,4 +51,5 @@ private:
     glm::vec2 mPosition;
     float mScale;
     float mRotation;
+    bool mFlip;
 };

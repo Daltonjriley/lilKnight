@@ -1,5 +1,7 @@
 #include "Game.h"
-#include "Actor/Actor.h"
+#include "Entity/Actor/Actor.h"
+#include "Component/SpriteComponent.h"
+#include "Entity/Mob/Player.h"
 
 #include <iostream>
 #include <algorithm>
@@ -75,33 +77,18 @@ void Game::processInput()
     }
 
     const bool *keyboard = SDL_GetKeyboardState(nullptr);
-    if (keyboard[SDL_SCANCODE_A])
-    {
-        movedir = -1.0f;
-        flipPlayer = true;
-    }
-    if (keyboard[SDL_SCANCODE_D])
-    {
-        movedir = 1.0f;
-        flipPlayer = false;
-    }
-    if (!keyboard[SDL_SCANCODE_A] && !keyboard[SDL_SCANCODE_D])
-    {
-        movedir = 0.0f;
-    }
-    if (keyboard[SDL_SCANCODE_A] && keyboard[SDL_SCANCODE_D])
-    {
-        movedir = 0.0f;
-    }
-    
-    
+    if (keyboard[SDL_SCANCODE_ESCAPE])
+	{
+		mRunning = false;
+	}
 
+    mPlayer->processKeyboard(keyboard);
 }
 
 void Game::update()
 {
-    #define SDL_TICKS_PASSED(A, B)  ((Sint32)((B) - (A)) <= 0)
     while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
+
     float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
 	if (deltaTime > 0.05f)
 	{
@@ -109,7 +96,34 @@ void Game::update()
 	}
 	mTicksCount = SDL_GetTicks();
 
-    playerX += movedir * 100.0f * deltaTime;
+
+    mUpdatingActors = true;
+    for (auto actor : mActors)
+    {
+        actor->update(deltaTime);
+    }
+    mUpdatingActors = false;
+
+
+    for (auto pending : mPendingActors)
+    {
+        mActors.emplace_back(pending);
+    }
+    mPendingActors.clear();
+
+
+    std::vector<Actor*> deadActors;
+    for (auto actor : mActors)
+    {
+        if (actor->getState() == Actor::State::Dead)
+        {
+            deadActors.emplace_back(actor);
+        }
+    }
+    for (auto actor : deadActors)
+    {
+        delete actor;
+    }
 }
 
 void Game::render()
@@ -117,35 +131,62 @@ void Game::render()
     SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
     SDL_RenderClear(mRenderer);
 
-    SDL_FRect src {
-        .x = 0.0f,
-        .y = 0.0f,
-        .w = SPRITE_SIZE_ACTUAL_W,
-        .h = SPRITE_SIZE_ACTUAL_H
-    };
-
-    SDL_FRect dst {
-        .x = playerX,
-        .y = FLOOR - SPRITE_SIZE,
-        .w = SPRITE_SIZE,
-        .h = SPRITE_SIZE
-    };
-
-    SDL_RenderTextureRotated(mRenderer, playerIdle, &src, &dst, 0.0f, nullptr, 
-        flipPlayer ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
+    for (auto sprite : mSprites)
+    {
+        sprite->draw(mRenderer);
+    }
 
     SDL_RenderPresent(mRenderer);
 }
 
+SDL_Texture* Game::getTexture(const std::string& fileName)
+{
+	SDL_Texture* texture = nullptr;
+	auto iter = mTextures.find(fileName);
+	if (iter != mTextures.end())
+	{
+		texture = iter->second;
+	}
+	else
+	{
+		SDL_Surface* surface = IMG_Load(fileName.c_str());
+		if (!surface)
+		{
+			SDL_Log("Failed to load texture file %s", fileName.c_str());
+			return nullptr;
+		}
+
+		
+		texture = SDL_CreateTextureFromSurface(mRenderer, surface);
+		SDL_DestroySurface(surface);
+		if (!texture)
+		{
+			SDL_Log("Failed to convert surface to texture for %s", fileName.c_str());
+			return nullptr;
+		}
+
+		mTextures.emplace(fileName.c_str(), texture);
+	}
+	return texture;
+}
+
 void Game::loadData()
 {
-    playerIdle = IMG_LoadTexture(mRenderer, "assets/player/IDLE.png");
-    SDL_SetTextureScaleMode(playerIdle, SDL_SCALEMODE_NEAREST);
+    
 }
 
 void Game::unloadData()
 {
-    SDL_DestroyTexture(playerIdle);
+    while (!mActors.empty())
+    {
+        delete mActors.back();
+    }
+
+    for (auto& texture : mTextures)
+    {
+        SDL_DestroyTexture(texture.second);
+    }
+    mTextures.clear();
 }
 
 void Game::shutdown()
@@ -177,12 +218,32 @@ void Game::removeActor(Actor* actor)
 		mPendingActors.pop_back();
 	}
 
-	// Is it in actors?
 	iter = std::find(mActors.begin(), mActors.end(), actor);
 	if (iter != mActors.end())
 	{
-		// Swap to end of vector and pop off (avoid erase copies)
 		std::iter_swap(iter, mActors.end() - 1);
 		mActors.pop_back();
 	}
+}
+
+void Game::addSprite(SpriteComponent* sprite)
+{
+	int myDrawOrder = sprite->getDrawOrder();
+	auto iter = mSprites.begin();
+	for ( ;
+		iter != mSprites.end();
+		++iter)
+	{
+		if (myDrawOrder < (*iter)->getDrawOrder())
+		{
+			break;
+		}
+	}
+	mSprites.insert(iter, sprite);
+}
+
+void Game::removeSprite(SpriteComponent* sprite)
+{
+	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
+	mSprites.erase(iter);
 }
