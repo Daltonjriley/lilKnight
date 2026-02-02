@@ -24,6 +24,7 @@ public:
 	
 	SDL_Texture* getTexture(const std::string& fileName);
     
+    float getFloor() const { return FLOOR; }    
     
 private:
     void processInput();

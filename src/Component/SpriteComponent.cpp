@@ -23,14 +23,21 @@ void SpriteComponent::draw(SDL_Renderer* renderer)
     {
         SDL_SetTextureScaleMode(mTexture, SDL_SCALEMODE_NEAREST);
 
+        SDL_FRect src {
+        .x = 0.0f,
+        .y = 0.0f,
+        .w = 96.0f,
+        .h = 84.0f
+        };
+
         SDL_FRect dst {
         .x = mOwner->getPosition().x,
-        .y = mOwner->getPosition().y,
+        .y = mOwner->getGame()->getFloor() - 64.0f,
         .w = (mTexWidth * mOwner->getScale()),
         .h = (mTexHeight * mOwner->getScale())
         };
 
-        SDL_RenderTextureRotated(renderer, mTexture, nullptr, &dst, glm::degrees(mOwner->getRotation()), nullptr, 
+        SDL_RenderTextureRotated(renderer, mTexture, &src, &dst, glm::degrees(mOwner->getRotation()), nullptr, 
                                  (mOwner->getFlip()) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
 
     }
